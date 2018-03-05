@@ -76,7 +76,6 @@ func NewNode(final bool) *Node {
 }
 
 // NewTokenizer is the default constructor for Tokernizer
-// TODO: is this redundant?
 func NewTokenizer() *Tokenizer {
 	t := new(Tokenizer)
 	t.Nodes = make(map[string]*Node)
@@ -88,7 +87,7 @@ func NewTokenizer() *Tokenizer {
 // LoadRules transforms preNodes into Nodes given a set of rules
 func (t *Tokenizer) LoadRules(rules *Rules) error {
 	// first iteration creates nodes and sets Final, Token attributes
-	for exp, n := range rules.Nodes {
+	for id, n := range rules.Nodes {
 		node := NewNode(n.Final)
 		if n.Final {
 			token, err := GetToken(n.Token)
@@ -96,8 +95,9 @@ func (t *Tokenizer) LoadRules(rules *Rules) error {
 				return err
 			}
 			node.Token = token
+
 		}
-		t.Nodes[exp] = node
+		t.Nodes[id] = node
 	}
 
 	// seconds iteration creates and assings paths to connect nodes

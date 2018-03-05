@@ -1,10 +1,17 @@
 package lexer
 
+/*
+   TODO: fix newline if previous char is \
+*/
+
 import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"strconv"
+
+	"github.com/olekukonko/tablewriter"
 )
 
 /* -- Structs -- */
@@ -39,7 +46,7 @@ type TokenTable struct {
 /* -- Constructors -- */
 
 // MakeLexer is the default constructor for lexer
-func MakeLexer(filename string, rules *Rules) *Lexer {
+func MakeLexer(filename string, rules *Rules) (*Lexer, error) {
 	l := new(Lexer)
 	l.ahead = 0
 	l.buffer = *bytes.NewBuffer(nil)
@@ -50,13 +57,15 @@ func MakeLexer(filename string, rules *Rules) *Lexer {
 	l.TokenTable = NewTokenTable()
 
 	l.loadFile()
-	l.tokenizer = new(Tokenizer)
-	l.tokenizer.LoadRules(rules)
-	return l
+	l.tokenizer = NewTokenizer()
+	err := l.tokenizer.LoadRules(rules)
+	if err != nil {
+		return nil, err
+	}
+	return l, nil
 }
 
 // NewTokenTable is the default constructor for TokenTable
-// TODO: is this redundant?
 func NewTokenTable() *TokenTable {
 	t := new(TokenTable)
 	t.Tokens = *new([]Token)
@@ -70,7 +79,7 @@ func NewTokenTable() *TokenTable {
 /* -- Methods -- */
 
 func (l *Lexer) consume(n int) {
-	l.position.line += n
+	l.position.index += n
 	l.position.column += l.ahead
 	l.ahead = 0
 	l.loadChar()
@@ -145,7 +154,7 @@ func (l *Lexer) tokenize(node *Node) (bool, error) {
 			l.buffer.WriteByte(l.currentChar)
 
 			// if it's the last character
-			if l.position.index+l.ahead > len(l.chars) {
+			if l.position.index+l.ahead+1 >= len(l.chars) {
 				if path.Target.Final {
 					l.writeToken(path.Target.Token)
 					return true, nil
@@ -175,6 +184,24 @@ func (l *Lexer) writeToken(t Token) {
 		l.TokenTable.writeToken(t, value, l.position.line,
 			l.position.column, l.position.column+l.ahead)
 	}
+	l.processToken(t, value)
+}
+
+func (tt *TokenTable) String() string {
+	tableStr := bytes.NewBufferString("")
+	table := tablewriter.NewWriter(tableStr)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	table.SetHeader([]string{"Token", "Value", "Line",
+		"Start Column", "End Column"})
+	for i, t := range tt.Tokens {
+		table.Append([]string{string(t), tt.Values[i], strconv.Itoa(tt.Lines[i]),
+			strconv.Itoa(tt.LinePosI[i]), strconv.Itoa(tt.LinePosE[i])})
+		if t == EOS {
+			table.Append([]string{"", "", "", "", ""})
+		}
+	}
+	table.Render()
+	return tableStr.String()
 }
 
 // write line to printable table
