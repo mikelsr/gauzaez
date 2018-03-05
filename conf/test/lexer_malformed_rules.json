@@ -1,0 +1,54 @@
+{
+  "nodes": {
+    "q0": {
+      "final": false,
+      "paths": {
+        "^0$":              "q1",
+        "^[1-9]$":          "q2"
+      }
+    },
+    "q1": {
+      "final": true,
+      "paths": {
+        "^[0-9]$":  "q2",
+        "^\\.$":     "q3",
+        "^x$":      "q5"
+      },
+      "value": "madeup"
+    },
+    "q2": {
+      "final": true,
+      "paths": {
+        "^[0-9]$":  "q2",
+        "^\\.$":     "q3"
+      },
+      "value": "number"
+    },
+    "q3": {
+      "final": false,
+      "paths": {
+        "^[0-9]$": "q4"
+      }
+    },
+    "q4": {
+      "final": true,
+      "paths": {
+        "^[0-9]$": "q4"
+      },
+      "value": "number"
+    },
+    "q5": {
+      "final": false,
+      "paths": {
+        "^[a-fA-F0-9]$": "q6"
+      }
+    },
+    "q6": {
+      "final": true,
+      "paths": {
+        "^[a-fA-F0-9]$": "q6"
+      },
+      "value": "hexadecimal"
+    }
+  }
+}
