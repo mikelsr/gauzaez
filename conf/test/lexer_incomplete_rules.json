@@ -1,0 +1,12 @@
+{
+        "nodes": {
+                "q0": {
+                        "final": false,
+                        "paths": { "^.*": "q1" }
+                },
+                "q1": {
+                        "final": false,
+                        "paths": {}
+                }
+        }
+}
