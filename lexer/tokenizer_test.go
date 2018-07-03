@@ -8,16 +8,16 @@ import (
 )
 
 var tokenizer *Tokenizer
-var CONFPATH = fmt.Sprintf("%s/src/github.com/mikelsr/gauzaez/conf/test", os.Getenv("GOPATH"))
-var failrulesFile = fmt.Sprintf("%s/lexer_malformed_rules.json", CONFPATH)
-var incompleterulesFile = fmt.Sprintf("%s/lexer_incomplete_rules.json", CONFPATH)
-var badJSON = fmt.Sprintf("%s/badformatted.json", CONFPATH)
+var CONFPATH = fmt.Sprintf("%s/src/bitbucket.org/mikelsr/gauzaez/test/lexer", os.Getenv("GOPATH"))
+var inconsistentRules = fmt.Sprintf("%s/inconsistent_rules.json", CONFPATH)
+var incompleteRules = fmt.Sprintf("%s/incomplete_rules.json", CONFPATH)
+var incorrectJSON = fmt.Sprintf("%s/incorrect_json.json", CONFPATH)
 
 func TestLoadRules(t *testing.T) {
 	tokenizer = NewTokenizer()
 
 	// this will return an error
-	invalidRules, _ := MakeRules(failrulesFile)
+	invalidRules, _ := MakeRules(inconsistentRules)
 	tokenizer.LoadRules(invalidRules)
 	// this won't
 	tokenizer.LoadRules(rules)
@@ -26,14 +26,14 @@ func TestLoadRules(t *testing.T) {
 func TestMakeRules(t *testing.T) {
 	// Both should fail
 	_, _ = MakeRules("I-really-hope-this-is-not-a-file")
-	_, _ = MakeRules(badJSON)
+	_, _ = MakeRules(incorrectJSON)
 }
 
 // TestTokenize test correct lexer and
 // builds a lexer with an incomplete automaton
 func TestTokenize(t *testing.T) {
 
-	inclompleteRules, _ := MakeRules(incompleterulesFile)
+	inclompleteRules, _ := MakeRules(incompleteRules)
 	// incomplete lexer
 	failLexer, _ := MakeLexer(testSourceFile, inclompleteRules)
 	failLexer.Tokenize()

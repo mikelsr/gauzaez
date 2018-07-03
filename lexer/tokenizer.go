@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	re "regexp"
 )
@@ -20,7 +21,7 @@ type Node struct {
 type preNode struct {
 	Final bool              `json:"final"`
 	Paths map[string]string `json:"paths"`
-	Token string            `json:"token,omitempty"`
+	Token Token             `json:"token,omitempty"`
 }
 
 // Path connects two nodes over a regular expression
@@ -31,7 +32,9 @@ type Path struct {
 
 // Rules is used by the tokenizer to build the token table
 type Rules struct {
-	Nodes map[string]preNode `json:"nodes"`
+	Nodes        map[string]preNode `json:"nodes"`
+	TokenStrings []Token            `json:"tokens"`
+	Tokens       map[Token]bool
 }
 
 // Tokenizer is the main struct used to iterate the source and assign Tokens
@@ -64,6 +67,11 @@ func MakeRules(filename string) (*Rules, error) {
 		return nil, err
 	}
 
+	rules.Tokens = make(map[Token]bool)
+	for _, t := range rules.TokenStrings {
+		rules.Tokens[t] = true
+	}
+
 	return rules, nil
 }
 
@@ -90,12 +98,10 @@ func (t *Tokenizer) LoadRules(rules *Rules) error {
 	for id, n := range rules.Nodes {
 		node := NewNode(n.Final)
 		if n.Final {
-			token, err := GetToken(n.Token)
-			if err != nil {
-				return err
+			if !rules.Tokens[n.Token] {
+				return fmt.Errorf("Token '%s' is not listed in rules", n.Token)
 			}
-			node.Token = token
-
+			node.Token = n.Token
 		}
 		t.Nodes[id] = node
 	}
