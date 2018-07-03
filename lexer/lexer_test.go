@@ -10,7 +10,7 @@ import (
 
 const testSourceFile = "/tmp/gauzaez_lexer_test.txt"
 
-var rulesFile = fmt.Sprintf("%s/src/github.com/mikelsr/gauzaez/conf/"+
+var rulesFile = fmt.Sprintf("%s/src/bitbucket.org/mikelsr/gauzaez/conf/"+
 	"lexer_rules.json", os.Getenv("GOPATH"))
 
 var testSourceFileContent []byte

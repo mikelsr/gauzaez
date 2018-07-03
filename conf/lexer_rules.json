@@ -1,190 +1,216 @@
 {
-  "nodes": {
-    "q0": {
-      "final": false,
-      "paths": {
-        "^0$":              "q1",
-        "^[1-9]$":          "q2",
-        "^_$":              "q7",
-        "^[a-zA-Z]$":       "q8",
-        "^=$":              "q9",
-        "^!$":              "q10",
-        "^>$":              "q11",
-        "^<$":              "q12",
-        "^[\\+\\-\/%]$": "q14",
-        "^\\*$":            "q15",
-        "^[{}]$":          "q16",
-        "^[\\(\\)]$":      "q17",
-        "^[\\[\\]]$":      "q18",
-        "^[\\^\\|&~]$":  "q19",
-        "^[\\n;]$":        "q20",
-        "^ $":              "q21",
-        "^\"$":             "q22",
-        "^,$":              "q25"
-      }
-    },
-    "q1": {
-      "final": true,
-      "paths": {
-        "^[0-9]$":  "q2",
-        "^\\.$":     "q3",
-        "^x$":      "q5"
-      },
-      "token": "number"
-    },
-    "q2": {
-      "final": true,
-      "paths": {
-        "^[0-9]$":  "q2",
-        "^\\.$":     "q3"
-      },
-      "token": "number"
-    },
-    "q3": {
-      "final": false,
-      "paths": {
-        "^[0-9]$": "q4"
-      }
-    },
-    "q4": {
-      "final": true,
-      "paths": {
-        "^[0-9]$": "q4"
-      },
-      "token": "number"
-    },
-    "q5": {
-      "final": false,
-      "paths": {
-        "^[a-fA-F0-9]$": "q6"
-      }
-    },
-    "q6": {
-      "final": true,
-      "paths": {
-        "^[a-fA-F0-9]$": "q6"
-      },
-      "token": "hexadecimal"
-    },
-    "q7": {
-      "final": false,
-      "paths": {
-        "^_$":        "q7",
-        "^[a-zA-Z]$": "q8"
-      }
-    },
-    "q8": {
-      "final": true,
-      "paths": {
-        "^[a-zA-Z0-9]$": "q8"
-      },
-      "token": "identifier"
-    },
-    "q9": {
-      "final": true,
-      "paths": {
-        "^=$": "q13"
-      },
-      "token": "assignator"
-    },
-    "q10": {
-      "final": true,
-      "paths": {
-        "^=$": "q13"
-      },
-      "token": "negation"
-    },
-    "q11": {
-      "final": true,
-      "paths": {
-        "^=$": "q13",
-        "^>$": "q19"
-      },
-      "token": "comparator"
-    },
-    "q12": {
-      "final": true,
-      "paths": {
-        "^=$": "q13",
-        "^<$": "q19"
-      },
-      "token": "comparator"
-    },
-    "q13": {
-      "final": true,
-      "paths": {},
-      "token": "comparator"
-    },
-    "q14": {
-      "final": true,
-      "paths": {},
-      "token": "operator"
-    },
-    "q15": {
-      "final": true,
-      "paths": {
-        "^\\*$": "q16"
-      },
-      "token": "operator"
-    },
-    "q16": {
-      "final": true,
-      "paths": {},
-      "token": "block"
-    },
-    "q17": {
-      "final": true,
-      "paths": {},
-      "token": "brace"
-    },
-    "q18": {
-      "final": true,
-      "paths": {},
-      "token": "index"
-    },
-    "q19": {
-      "final": true,
-      "paths": {},
-      "token": "binary-operator"
-    },
-    "q20": {
-      "final": true,
-      "paths": {},
-      "token": "end-of-statement"
-    },
-    "q21": {
-      "final": true,
-      "paths": {},
-      "token": "whitespace"
-    },
-    "q22": {
-      "final": false,
-      "paths": {
-        "^[^\"\\\\]$": "q22",
-        "^\\\\$":   "q23",
-        "^\"$":     "q24"
-      }
-    },
-    "q23": {
-      "final": false,
-      "paths": {
-        "^.$": "q22"
-      }
-    },
-    "q24": {
-      "final": true,
-      "paths": {},
-      "token": "string"
-    },
-    "q25": {
-      "final": true,
-      "paths": {},
-      "token": "separator"
-    },
-    "q26": {
-      "final": true,
-      "paths": {},
-      "token": "access"
-    }
-  }
+        "tokens": [
+                "access",
+                "assignator",
+                "binary-operator",
+                "block",
+                "brace",
+                "comparator",
+                "end-of-statement",
+                "identifier",
+                "index",
+                "hexadecimal",
+                "negation",
+                "number",
+                "operator",
+                "separator",
+                "string",
+                "whitespace",
+                "unknown"
+        ],
+        "nodes": {
+                "q0": {
+                        "final": false,
+                        "paths": {
+                                "^0$":          "q1",
+                                "^[1-9]$":      "q2",
+                                "^_$":          "q7",
+                                "^[a-zA-Z]$":   "q8",
+                                "^=$":          "q9",
+                                "^!$":          "q10",
+                                "^>$":          "q11",
+                                "^<$":          "q12",
+                                "^[\\+\\-\/%]$":"q14",
+                                "^\\*$":        "q15",
+                                "^[{}]$":       "q16",
+                                "^[\\(\\)]$":   "q17",
+                                "^[\\[\\]]$":   "q18",
+                                "^[\\^\\|&~]$": "q19",
+                                "^[\\n;]$":     "q20",
+                                "^ $":          "q21",
+                                "^\"$":         "q22",
+                                "^,$":          "q25",
+                                "^\\.$":        "q26",
+                                "^\n$":         "q27"
+                        }
+                },
+                "q1": {
+                        "final": true,
+                        "paths": {
+                                "^[0-9]$":  "q2",
+                                "^\\.$":     "q3",
+                                "^x$":      "q5"
+                        },
+                        "token": "number"
+                },
+                "q2": {
+                        "final": true,
+                        "paths": {
+                                "^[0-9]$":  "q2",
+                                "^\\.$":     "q3"
+                        },
+                        "token": "number"
+                },
+                "q3": {
+                        "final": false,
+                        "paths": {
+                                "^[0-9]$": "q4"
+                        }
+                },
+                "q4": {
+                        "final": true,
+                        "paths": {
+                                "^[0-9]$": "q4"
+                        },
+                        "token": "number"
+                },
+                "q5": {
+                        "final": false,
+                        "paths": {
+                                "^[a-fA-F0-9]$": "q6"
+                        }
+                },
+                "q6": {
+                        "final": true,
+                        "paths": {
+                                "^[a-fA-F0-9]$": "q6"
+                        },
+                        "token": "hexadecimal"
+                },
+                "q7": {
+                        "final": false,
+                        "paths": {
+                                "^_$":        "q7",
+                                "^[a-zA-Z]$": "q8"
+                        }
+                },
+                "q8": {
+                        "final": true,
+                        "paths": {
+                                "^[a-zA-Z0-9]$": "q8"
+                        },
+                        "token": "identifier"
+                },
+                "q9": {
+                        "final": true,
+                        "paths": {
+                                "^=$": "q13"
+                        },
+                        "token": "assignator"
+                },
+                "q10": {
+                        "final": true,
+                        "paths": {
+                                "^=$": "q13"
+                        },
+                        "token": "negation"
+                },
+                "q11": {
+                        "final": true,
+                        "paths": {
+                                "^=$": "q13",
+                                "^>$": "q19"
+                        },
+                        "token": "comparator"
+                },
+                "q12": {
+                        "final": true,
+                        "paths": {
+                                "^=$": "q13",
+                                "^<$": "q19"
+                        },
+                        "token": "comparator"
+                },
+                "q13": {
+                        "final": true,
+                        "paths": {},
+                        "token": "comparator"
+                },
+                "q14": {
+                        "final": true,
+                        "paths": {},
+                        "token": "operator"
+                },
+                "q15": {
+                        "final": true,
+                        "paths": {
+                                "^\\*$": "q16"
+                        },
+                        "token": "operator"
+                },
+                "q16": {
+                        "final": true,
+                        "paths": {},
+                        "token": "block"
+                },
+                "q17": {
+                        "final": true,
+                        "paths": {},
+                        "token": "brace"
+                },
+                "q18": {
+                        "final": true,
+                        "paths": {},
+                        "token": "index"
+                },
+                "q19": {
+                        "final": true,
+                        "paths": {},
+                        "token": "binary-operator"
+                },
+                "q20": {
+                        "final": true,
+                        "paths": {},
+                        "token": "end-of-statement"
+                },
+                "q21": {
+                        "final": true,
+                        "paths": {},
+                        "token": "whitespace"
+                },
+                "q22": {
+                        "final": false,
+                        "paths": {
+                                "^[^\"\\\\]$": "q22",
+                                "^\\\\$":   "q23",
+                                "^\"$":     "q24"
+                        }
+                },
+                "q23": {
+                        "final": false,
+                        "paths": {
+                                "^.$": "q22"
+                        }
+                },
+                "q24": {
+                        "final": true,
+                        "paths": {},
+                        "token": "string"
+                },
+                "q25": {
+                        "final": true,
+                        "paths": {},
+                        "token": "separator"
+                },
+                "q26": {
+                        "final": true,
+                        "paths": {},
+                        "token": "access"
+                },
+                "q27": {
+                        "final": true,
+                        "paths": {},
+                        "token": "end-of-statement"
+                }
+        }
 }

@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/mikelsr/gauzaez/lexer"
+	"bitbucket.org/mikelsr/gauzaez/lexer"
 )
 
 func main() {
@@ -39,5 +39,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.Println(lex.TokenTable)
+	log.Printf("\n%s\n", lex.TokenTable)
 }
