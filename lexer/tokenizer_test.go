@@ -18,9 +18,9 @@ func TestLoadRules(t *testing.T) {
 
 	// this will return an error
 	invalidRules, _ := MakeRules(inconsistentRules)
-	tokenizer.LoadRules(invalidRules)
+	tokenizer.LoadRules(*invalidRules)
 	// this won't
-	tokenizer.LoadRules(rules)
+	tokenizer.LoadRules(*rules)
 }
 
 func TestMakeRules(t *testing.T) {
@@ -35,7 +35,7 @@ func TestTokenize(t *testing.T) {
 
 	inclompleteRules, _ := MakeRules(incompleteRules)
 	// incomplete lexer
-	failLexer, _ := MakeLexer(testSourceFile, inclompleteRules)
+	failLexer, _ := MakeLexer(testSourceFile, *inclompleteRules)
 	failLexer.Tokenize()
 	// correct lexer
 	lexer.Tokenize()

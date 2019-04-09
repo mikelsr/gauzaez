@@ -1,0 +1,34 @@
+package lexer
+
+import (
+	"encoding/json"
+	"io/ioutil"
+)
+
+// Rules is used by the tokenizer to build the token table
+type Rules struct {
+	Nodes        map[string]preNode `json:"nodes"`
+	TokenStrings []Token            `json:"tokens"`
+	Tokens       map[Token]bool
+}
+
+// MakeRules loads rules from a JSON file to a Rules struct
+func MakeRules(filename string) (*Rules, error) {
+	ruleFile, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	rules := new(Rules)
+	err = json.Unmarshal(ruleFile, rules)
+	if err != nil {
+		return nil, err
+	}
+
+	rules.Tokens = make(map[Token]bool)
+	for _, t := range rules.TokenStrings {
+		rules.Tokens[t] = true
+	}
+
+	return rules, nil
+}

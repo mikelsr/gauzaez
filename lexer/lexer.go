@@ -27,10 +27,8 @@ type position struct {
 	line   int
 }
 
-/* -- Constructors -- */
-
 // MakeLexer is the default constructor for lexer
-func MakeLexer(filename string, rules *Rules) (*Lexer, error) {
+func MakeLexer(filename string, rules Rules) (*Lexer, error) {
 	l := new(Lexer)
 	l.ahead = 0
 	l.buffer = *bytes.NewBuffer(nil)
@@ -48,8 +46,6 @@ func MakeLexer(filename string, rules *Rules) (*Lexer, error) {
 	}
 	return l, nil
 }
-
-/* -- Methods -- */
 
 func (l *Lexer) consume(n int) {
 	l.position.index += n

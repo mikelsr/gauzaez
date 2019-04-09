@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 
@@ -11,30 +10,29 @@ import (
 
 func main() {
 
-	defaultRules := fmt.Sprintf("%s/src/github.com/mikelsr/gauzaez/conf/lexer_rules.json",
-		os.Getenv("GOPATH"))
-
-	source := flag.String("source", "", "Source file to process")
-	lexerRules := flag.String("rules", defaultRules,
+	sourcePath := flag.String("source", "", "Source file to process")
+	rulesPath := flag.String("rules", defaultRules,
 		"[optional] JSON representing automaton that\n\tdefines the behaviour of the lexer")
-
 	flag.Parse()
-	log.Printf("Source: %s\n", *source)
-	log.Printf("Rules: %s\n", *lexerRules)
 
-	if *source == "" {
+	if *sourcePath == "" || *rulesPath == "" {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
 
-	rules, err := lexer.MakeRules(*lexerRules)
+	// rules
+	rules, err := lexer.MakeRules(*rulesPath)
 	if err != nil {
 		panic(err)
 	}
-	lex, err := lexer.MakeLexer(*source, rules)
+
+	// create lexer and apply rules to lexer
+	lex, err := lexer.MakeLexer(*sourcePath, rules)
 	if err != nil {
 		panic(err)
 	}
+
+	// tokenize source
 	err = lex.Tokenize()
 	if err != nil {
 		panic(err)
