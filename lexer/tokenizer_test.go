@@ -2,10 +2,12 @@ package lexer
 
 import (
 	"testing"
+
+	"bitbucket.org/mikelsr/gauzaez/lexer/automaton"
 )
 
-func TestTokenizerLoadRules(t *testing.T) {
-	tokenizer := Tokenizer{Nodes: make(map[string]*Node)}
+func TestTokenizer_LoadRules(t *testing.T) {
+	tokenizer := Tokenizer{Nodes: make(map[string]*automaton.Node)}
 	// this will return an error
 	invalidRules, _ := MakeRules(inconsistentRules)
 	tokenizer.LoadRules(*invalidRules)

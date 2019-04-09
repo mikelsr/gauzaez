@@ -6,9 +6,9 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-)
 
-/* -- Structs -- */
+	"bitbucket.org/mikelsr/gauzaez/lexer/automaton"
+)
 
 // Lexer is used to build and store the token table
 type Lexer struct {
@@ -29,7 +29,7 @@ type position struct {
 // MakeLexer is the default constructor for lexer
 func MakeLexer(rules Rules) (*Lexer, error) {
 	l := new(Lexer)
-	l.tokenizer = Tokenizer{Nodes: make(map[string]*Node)}
+	l.tokenizer = Tokenizer{Nodes: make(map[string]*automaton.Node)}
 	err := l.tokenizer.LoadRules(rules)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (l *Lexer) peek(n int) {
 }
 
 // processToken manages lexer position in case of EOS or ↵
-func (l *Lexer) processToken(t Token, v string) {
+func (l *Lexer) processToken(t automaton.Token, v string) {
 	if v == "\n" {
 		l.position.column = 0
 		l.position.line++
@@ -78,7 +78,7 @@ func (l *Lexer) Tokenize(in io.Reader) (*TokenTable, error) {
 		return nil, err
 	}
 
-	tokenTable := NewTokenTable()
+	tokenTable := &TokenTable{}
 	l.source = source
 
 	l.loadChar()
@@ -99,7 +99,7 @@ func (l *Lexer) Tokenize(in io.Reader) (*TokenTable, error) {
 }
 
 // tokenize a single token
-func (l *Lexer) tokenize(node *Node, tt *TokenTable) (bool, error) {
+func (l *Lexer) tokenize(node *automaton.Node, tt *TokenTable) (bool, error) {
 	// if l.currentChar matches a pattern, follow corresponding path
 	for _, path := range node.Paths {
 		if path.Exp.MatchString(string(l.currentChar)) {
@@ -132,7 +132,7 @@ func (l *Lexer) tokenize(node *Node, tt *TokenTable) (bool, error) {
 
 // writeToken writes the token t to the tokentable tt using the positions at
 // the lexer
-func (l *Lexer) writeToken(t Token, tt *TokenTable) {
+func (l *Lexer) writeToken(t automaton.Token, tt *TokenTable) {
 	value := l.buffer.String()
 
 	l.buffer.Reset()

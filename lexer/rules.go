@@ -3,13 +3,15 @@ package lexer
 import (
 	"encoding/json"
 	"io/ioutil"
+
+	"bitbucket.org/mikelsr/gauzaez/lexer/automaton"
 )
 
 // Rules is used by the tokenizer to build the token table
 type Rules struct {
-	Nodes        map[string]preNode `json:"nodes"`
-	TokenStrings []Token            `json:"tokens"`
-	Tokens       map[Token]bool
+	Nodes        map[string]automaton.PreNode `json:"nodes"`
+	TokenStrings []automaton.Token            `json:"tokens"`
+	Tokens       map[automaton.Token]bool
 }
 
 // MakeRules loads rules from a JSON file to a Rules struct
@@ -25,7 +27,7 @@ func MakeRules(filename string) (*Rules, error) {
 		return nil, err
 	}
 
-	rules.Tokens = make(map[Token]bool)
+	rules.Tokens = make(map[automaton.Token]bool)
 	for _, t := range rules.TokenStrings {
 		rules.Tokens[t] = true
 	}

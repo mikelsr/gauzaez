@@ -12,11 +12,11 @@ type Tokenizer struct {
 	Nodes map[string]*automaton.Node
 }
 
-// LoadRules transforms preNodes into Nodes given a set of rules
+// LoadRules transforms PreNodes into Nodes given a set of rules
 func (t *Tokenizer) LoadRules(rules Rules) error {
 	// first iteration creates nodes and sets Final, Token attributes
 	for id, n := range rules.Nodes {
-		node := Node{Final: n.Final}
+		node := automaton.Node{Final: n.Final}
 		if n.Final {
 			if !rules.Tokens[n.Token] {
 				return fmt.Errorf("Token '%s' is not listed in rules", n.Token)
@@ -29,7 +29,7 @@ func (t *Tokenizer) LoadRules(rules Rules) error {
 	// seconds iteration creates and assings paths to connect nodes
 	for id, n := range rules.Nodes {
 		for exp, target := range n.Paths {
-			path := Path{
+			path := automaton.Path{
 				Exp:    *re.MustCompile(exp),
 				Target: t.Nodes[target],
 			}

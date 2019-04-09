@@ -16,10 +16,17 @@ func TestMain(m *testing.M) {
 	}
 
 	// load rules
-	rules, _ = MakeRules(rulesFile)
+	var err error
+	rules, err = MakeRules(rulesFile)
+	if err != nil {
+		panic(err)
+	}
 
 	// configure lexer
-	lexer, _ = MakeLexer(*rules)
+	lexer, err = MakeLexer(*rules)
+	if err != nil {
+		panic(err)
+	}
 	exitCode := m.Run()
 	os.Remove(testSourceFile)
 	os.Exit(exitCode)
