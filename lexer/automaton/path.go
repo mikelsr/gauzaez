@@ -1,4 +1,4 @@
-package lexer
+package automaton
 
 import re "regexp"
 

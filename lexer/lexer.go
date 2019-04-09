@@ -3,6 +3,7 @@ package lexer
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 )
@@ -12,13 +13,11 @@ import (
 // Lexer is used to build and store the token table
 type Lexer struct {
 	ahead       int
-	buffer      bytes.Buffer
-	chars       []byte
+	buffer      bytes.Buffer // buffer stores characters of the current token
 	currentChar byte
 	position    position
-	filename    string
-	TokenTable  *TokenTable
-	tokenizer   *Tokenizer
+	source      []byte // source contains the source file content
+	tokenizer   Tokenizer
 }
 
 type position struct {
@@ -28,22 +27,14 @@ type position struct {
 }
 
 // MakeLexer is the default constructor for lexer
-func MakeLexer(filename string, rules Rules) (*Lexer, error) {
+func MakeLexer(rules Rules) (*Lexer, error) {
 	l := new(Lexer)
-	l.ahead = 0
-	l.buffer = *bytes.NewBuffer(nil)
-	l.position.column = 1
-	l.position.index = 0
-	l.position.line = 1
-	l.filename = filename
-	l.TokenTable = NewTokenTable()
-
-	l.loadFile()
-	l.tokenizer = NewTokenizer()
+	l.tokenizer = Tokenizer{Nodes: make(map[string]*Node)}
 	err := l.tokenizer.LoadRules(rules)
 	if err != nil {
 		return nil, err
 	}
+	l.Reset()
 	return l, nil
 }
 
@@ -55,17 +46,7 @@ func (l *Lexer) consume(n int) {
 }
 
 func (l *Lexer) loadChar() {
-	l.currentChar = l.chars[l.position.index+l.ahead]
-}
-
-func (l *Lexer) loadFile() {
-	chars, err := ioutil.ReadFile(l.filename)
-	if err != nil {
-		panic(err)
-	}
-	l.chars = chars
-	log.Printf("Loaded contents of '%s' (%d bytes in total).\n",
-		l.filename, len(l.chars))
+	l.currentChar = l.source[l.position.index+l.ahead]
 }
 
 func (l *Lexer) peek(n int) {
@@ -81,25 +62,44 @@ func (l *Lexer) processToken(t Token, v string) {
 	}
 }
 
-// Tokenize iterates l.chars and fills the token table l.TokenTable
-func (l *Lexer) Tokenize() error {
+// Reset readys the lexer for tokenizing
+func (l *Lexer) Reset() {
+	l.ahead = 0
+	l.buffer = *bytes.NewBuffer(nil)
+	l.position.column = 1
+	l.position.index = 0
+	l.position.line = 1
+}
+
+// Tokenize tokenizes all the input in the io.Reader
+func (l *Lexer) Tokenize(in io.Reader) (*TokenTable, error) {
+	source, err := ioutil.ReadAll(in)
+	if err != nil {
+		return nil, err
+	}
+
+	tokenTable := NewTokenTable()
+	l.source = source
+
 	l.loadChar()
-	l.tokenize(l.tokenizer.Nodes["q0" /* initial token */])
+	// q0 is the initial token
+	l.tokenize(l.tokenizer.Nodes["q0"], tokenTable)
 
 	// tokenize returns end if analyzed element was last element
-	for l.position.index < len(l.chars) {
-		end, err := l.tokenize(l.tokenizer.Nodes["q0"])
+	for l.position.index < len(l.source) {
+		end, err := l.tokenize(l.tokenizer.Nodes["q0"], tokenTable)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if end {
 			break
 		}
 	}
-	return nil
+	return tokenTable, nil
 }
 
-func (l *Lexer) tokenize(node *Node) (bool, error) {
+// tokenize a single token
+func (l *Lexer) tokenize(node *Node, tt *TokenTable) (bool, error) {
 	// if l.currentChar matches a pattern, follow corresponding path
 	for _, path := range node.Paths {
 		if path.Exp.MatchString(string(l.currentChar)) {
@@ -108,20 +108,20 @@ func (l *Lexer) tokenize(node *Node) (bool, error) {
 			l.buffer.WriteByte(l.currentChar)
 
 			// if it's the last character
-			if l.position.index+l.ahead+1 >= len(l.chars) {
+			if l.position.index+l.ahead+1 >= len(l.source) {
 				if path.Target.Final {
-					l.writeToken(path.Target.Token)
+					l.writeToken(path.Target.Token, tt)
 					return true, nil
 				}
 			}
 			// if it's not the last character
 			l.peek(1)
-			return l.tokenize(path.Target)
+			return l.tokenize(path.Target, tt)
 		}
 	}
 	// if current state is a final state, return token & consume
 	if node.Final {
-		l.writeToken(node.Token)
+		l.writeToken(node.Token, tt)
 		l.consume(l.ahead)
 		return false, nil
 	}
@@ -130,12 +130,15 @@ func (l *Lexer) tokenize(node *Node) (bool, error) {
 		l.buffer.String(), l.position.line, l.position.column)
 }
 
-func (l *Lexer) writeToken(t Token) {
+// writeToken writes the token t to the tokentable tt using the positions at
+// the lexer
+func (l *Lexer) writeToken(t Token, tt *TokenTable) {
 	value := l.buffer.String()
+
 	l.buffer.Reset()
 	// if character shouldn't be ignored, write it on token table
 
-	l.TokenTable.writeToken(t, value, uint(l.position.line),
+	tt.writeToken(t, value, uint(l.position.line),
 		uint(l.position.column), uint(l.position.column+l.ahead))
 
 	l.processToken(t, value)
